@@ -9,3 +9,5 @@ package
 .nyc_output
 
 tsconfig.tsbuildinfo
+
+.idea
