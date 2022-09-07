@@ -7,7 +7,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/omar-dulaimi/trpc-shield">
+  <a href="https://github.com/conte-ltd/trpc-shield">
     <img src="media/shield.png" alt="Logo" width="150">
   </a>
 
@@ -16,20 +16,14 @@
   <p align="center">
     tRPC permissions as another layer of abstraction!s!
     <br />
-    <a href="https://github.com/omar-dulaimi/trpc-shield"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/conte-ltd/trpc-shield"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/omar-dulaimi/trpc-shield/issues">Report Bug</a>
+    <a href="https://github.com/conte-ltd/trpc-shield/issues">Report Bug</a>
     ·
-    <a href="https://github.com/omar-dulaimi/trpc-shield/issues">Request Feature</a>
+    <a href="https://github.com/conte-ltd/trpc-shield/issues">Request Feature</a>
   </p>
 </div>
-
-<p align="center">
-  <a href="https://www.buymeacoffee.com/omardulaimi">
-    <img src="https://cdn.buymeacoffee.com/buttons/default-black.png" alt="Buy Me A Coffee" height="41" width="174">
-  </a>
-</p>
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -60,13 +54,13 @@ tRPC Shield helps you create a permission layer for your application. Using an i
 #### Using npm
 
 ```sh
-npm install trpc-shield
+npm install @conte-ltd/trpc-shield
 ```
 
 #### Using yarn
 
 ```sh
-yarn add trpc-shield
+yarn add @conte-ltd/trpc-shield
 ```
 
 ## Usage
@@ -123,7 +117,7 @@ const permissions = shield({
 })
 ```
 
-For a fully working example, [go here](https://github.com/omar-dulaimi/trpc-shield/tree/master/example).
+For a fully working example, [go here](https://github.com/conte-ltd/trpc-shield/tree/master/example).
 ## Documentation
 
 ### `shield(rules?, options?)`
@@ -262,31 +256,3 @@ const permissions = shield(
   { fallbackRule: deny },
 )
 ```
-
-## Contributors
-
-This project exists thanks to all the people who contribute.
-
-## Contributing
-
-We are always looking for people to help us grow `trpc-shield`! If you have an issue, feature request, or pull request, let us know!
-
-## Acknowledgments
-
-A huge thank you goes to everybody who worked on Graphql Shield, as this project is based on it.
-
-Also thanks goes to flaticon, for use of one of their icons in the logo: <a href="https://www.flaticon.com/free-icons/shield" title="shield icons">Shield icons created by Freepik - Flaticon</a>
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-
-[contributors-shield]: https://img.shields.io/github/contributors/omar-dulaimi/trpc-shield.svg?style=for-the-badge
-[contributors-url]: https://github.com/omar-dulaimi/trpc-shield/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/omar-dulaimi/trpc-shield.svg?style=for-the-badge
-[forks-url]: https://github.com/omar-dulaimi/trpc-shield/network/members
-[stars-shield]: https://img.shields.io/github/stars/omar-dulaimi/trpc-shield.svg?style=for-the-badge
-[stars-url]: https://github.com/omar-dulaimi/trpc-shield/stargazers
-[issues-shield]: https://img.shields.io/github/issues/omar-dulaimi/trpc-shield.svg?style=for-the-badge
-[issues-url]: https://github.com/omar-dulaimi/trpc-shield/issues
-[license-shield]: https://img.shields.io/github/license/omar-dulaimi/trpc-shield?style=for-the-badge
-[license-url]: https://github.com/omar-dulaimi/trpc-shield/blob/master/LICENSE
