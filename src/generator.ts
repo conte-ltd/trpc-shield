@@ -23,11 +23,37 @@ export function generateMiddlewareFromRuleTree(ruleTree: IRules, options: IOptio
     rawInput: unknown
   }) => {
     const opWithPath: Array<string> = path.split('.')
-    const opName: string = opWithPath[opWithPath.length - 1]
-    const rule = ruleTree?.[type]?.[opName]
+
+    let rule
+    if (opWithPath.length > 1) {
+      const opNames = opWithPath.reduce<string[]>((prev, current, index) => {
+        if (index === 0) {
+          return [current, `${current}.*`]
+        } else if (index === opWithPath.length - 1) {
+          const [prevHead, ...prevTail] = prev
+          return [`${prevHead}.${current}`, ...prevTail, `*.${current}`]
+        } else {
+          const [prevHead, ...prevTail] = prev
+          return [`${prevHead}.${current}`, ...prevTail, `*.${current}.*`]
+        }
+      }, [])
+
+      opNames.push('*')
+
+      for (const opName of opNames) {
+        rule = ruleTree?.[type]?.[opName]
+
+        if (rule !== undefined) {
+          break
+        }
+      }
+    } else {
+      const opName: string = opWithPath[0]
+      rule = ruleTree?.[type]?.[opName]
+    }
 
     if (rule) {
-      return rule?.resolve(ctx, type, path, rawInput, options).then((result: any) => {
+      return rule.resolve(ctx, type, path, rawInput, options).then((result: any) => {
         if (!result) throw options.fallbackError
         return next()
       })

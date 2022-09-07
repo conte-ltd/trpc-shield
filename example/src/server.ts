@@ -1,21 +1,43 @@
-import * as trpcExpress from '@trpc/server/adapters/express';
-import express from 'express';
-import { appRouter } from '../prisma/trpc/routers/index';
-import { createContext } from './context';
+import * as trpcExpress from '@trpc/server/adapters/express'
+import express from 'express'
+import { expressHandler } from 'trpc-playground/handlers/express'
+import { appRouter } from './trpc/routers'
+import { createContext } from './context'
 
-const PORT = 3001;
+const PORT = 3001
 
-const app = express();
+const runApp = async () => {
+  const app = express()
 
-app.use(
-  '/trpc',
-  trpcExpress.createExpressMiddleware({
-    router: appRouter,
-    createContext,
-  }),
-);
-app.get('/', (req, res) => res.send('Express + Prisma + tRPC + tRPC Shield'));
+  const trpcApiEndpoint = '/api/trpc'
+  const playgroundEndpoint = '/api/trpc-playground'
 
-app.listen(PORT, () => {
-  console.log(`server listening at http://localhost:${PORT}`);
-});
+  app.use(
+    trpcApiEndpoint,
+    trpcExpress.createExpressMiddleware({
+      router: appRouter,
+      createContext,
+    }),
+  )
+
+  app.use(
+    playgroundEndpoint,
+    await expressHandler({
+      trpcApiEndpoint,
+      playgroundEndpoint,
+      router: appRouter,
+      // uncomment this if you're using superjson
+      // request: {
+      //   superjson: true,
+      // },
+    }),
+  )
+
+  app.get('/', (req, res) => res.send('Express + Prisma + tRPC + tRPC Shield'))
+
+  app.listen(PORT, () => {
+    console.log(`listening at http://localhost:${PORT}`)
+  })
+}
+
+runApp()

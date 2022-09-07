@@ -108,6 +108,21 @@ export function createRouter() {
   return trpc.router<Context>().middleware(permissions)
 }
 ```
+
+WildCard Pattern
+
+```ts
+const permissions = shield({
+  query: {
+    "user.*": not(isAuthenticated),
+    "*.list": isAuthenticated,
+  },
+  mutation: {
+    "*": isAuthenticated
+  }
+})
+```
+
 For a fully working example, [go here](https://github.com/omar-dulaimi/trpc-shield/tree/master/example).
 ## Documentation
 

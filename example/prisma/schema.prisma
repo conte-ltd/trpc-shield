@@ -4,12 +4,8 @@ generator client {
 
 generator trpc {
   provider = "prisma-trpc-generator"
-  output   = "./trpc"
-}
-
-generator trpc_shield {
-  provider = "prisma-trpc-shield-generator"
-  output = "./shield"
+  output = "../src/trpc"
+  baseRouterPath = "../../router"
 }
 
 datasource db {
@@ -21,7 +17,18 @@ model User {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   username  String?  @unique
-  password  String?
   email     String   @unique
-  googleId  String?  @unique
+  posts Post[]
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  title     String
+  content   String?
+  published Boolean  @default(false)
+  viewCount Int      @default(0)
+  author    User?    @relation(fields: [authorId], references: [id])
+  authorId  Int?
 }

@@ -1,13 +1,13 @@
 {
-  "name": "trpc-shield",
-  "version": "0.1.1",
+  "name": "@conte-ltd/trpc-shield",
+  "version": "0.0.1",
   "description": "tRPC permissions as another layer of abstraction!",
-  "repository": "https://github.com/omar-dulaimi/trpc-shield",
+  "repository": "https://github.com/conte-ltd/trpc-shield",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "author": {
-    "name": "Omar Dulaimi",
-    "url": "https://github.com/omar-dulaimi"
+    "name": "CONTE, Ltd.",
+    "url": "https://github.com/conte-ltd"
   },
   "keywords": [
     "trpc",
@@ -17,7 +17,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "tsc",
-    "prerelease": "npm run build",
+    "prerelease": "yarn build",
     "release": "./package.sh && cd package && npm publish",
     "prettier": "prettier --ignore-path .gitignore --write --list-different \"**/*.{ts,tsx,yml}\""
   },
@@ -31,11 +31,13 @@
     "typescript": "4.3.5"
   },
   "bugs": {
-    "url": "https://github.com/omar-dulaimi/trpc-shield/issues"
+    "url": "https://github.com/conte-ltd/trpc-shield/issues"
   },
-  "homepage": "https://github.com/omar-dulaimi/trpc-shield#readme",
-  "private": true,
+  "homepage": "https://github.com/conte-ltd/trpc-shield#readme",
   "dependencies": {
     "@trpc/server": "^9.23.6"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
