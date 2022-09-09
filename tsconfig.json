@@ -2,7 +2,7 @@
   "compilerOptions": {
     "incremental": true,
     "baseUrl": ".",
-    "outDir": "dist",
+    "outDir": "./lib",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "importHelpers": true,
@@ -21,7 +21,7 @@
     "noImplicitReturns": true,
     "noUnusedLocals": false,
     "resolveJsonModule": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
   },
   "include": ["src"],
   "exclude": ["dist"]
