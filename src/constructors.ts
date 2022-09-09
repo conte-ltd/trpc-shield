@@ -40,10 +40,10 @@ import {
  * })
  *
  */
-export const rule = (
+export const rule = <TContext extends Record<string, any>>(
   name?: string,
   options?: IRuleConstructorOptions,
-) => (func: IRuleFunction): Rule => {
+) => (func: IRuleFunction<TContext>): Rule => {
   if (typeof name === 'object') {
     options = name
     name = Math.random().toString()
@@ -54,6 +54,7 @@ export const rule = (
     options = {}
   }
 
+  // @ts-ignore
   return new Rule(name, func, {})
 }
 

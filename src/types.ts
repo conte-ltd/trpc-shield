@@ -23,7 +23,7 @@ export declare class ILogicRule {
 }
 
 export type IRuleResult = boolean | string | Error
-export type IRuleFunction = (ctx: { [name: string]: any }, type: string, path: string, rawInput: unknown, options: IOptions) => IRuleResult | Promise<IRuleResult>
+export type IRuleFunction<TContext extends Record<string, any> = Record<string, any>> = (ctx: TContext, type: string, path: string, rawInput: unknown, options: IOptions) => IRuleResult | Promise<IRuleResult>
 
 
 
