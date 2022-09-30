@@ -1,6 +1,6 @@
 {
   "name": "@conte-ltd/trpc-shield",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "tRPC permissions as another layer of abstraction!",
   "repository": "https://github.com/conte-ltd/trpc-shield",
   "main": "lib/index.js",
