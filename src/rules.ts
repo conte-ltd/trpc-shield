@@ -7,7 +7,6 @@ import {
   IRuleResult,
   IOptions,
 } from "./types";
-import { isUndefined } from "util";
 
 export class Rule implements IRule {
   readonly name: string;
@@ -186,7 +185,7 @@ export class RuleChain extends LogicRule {
     async function iterate([rule, ...otherRules]: ShieldRule[]): Promise<
       IRuleResult[]
     > {
-      if (isUndefined(rule)) return [];
+      if (rule === undefined) return [];
       return rule.resolve(ctx, type, path, rawInput, options).then((res) => {
         if (res !== true) {
           return [res];
@@ -232,7 +231,7 @@ export class RuleRace extends LogicRule {
     async function iterate([rule, ...otherRules]: ShieldRule[]): Promise<
       IRuleResult[]
     > {
-      if (isUndefined(rule)) return [];
+      if (rule === undefined) return [];
       return rule.resolve(ctx, type, path, rawInput, options).then((res) => {
         if (res === true) {
           return [res];

@@ -1,9 +1,9 @@
-import { ValidationError, validateRuleTree } from './validation'
-import { IRules, IOptions, IOptionsConstructor, ShieldRule, IFallbackErrorType } from './types'
-import { generateMiddlewareFromRuleTree } from './generator'
-import { allow } from './constructors'
-import { withDefault } from './utils'
-import { MiddlewareFunction } from '@trpc/server/dist/declarations/src/internals/middlewares'
+import {validateRuleTree, ValidationError} from './validation'
+import {IFallbackErrorType, IOptions, IOptionsConstructor, IRules, ShieldRule} from './types'
+import {generateMiddlewareFromRuleTree} from './generator'
+import {allow} from './constructors'
+import {withDefault} from './utils'
+import {MiddlewareFunction} from '@trpc/server'
 
 /**
  *
@@ -34,13 +34,12 @@ function normalizeOptions(options: IOptionsConstructor): IOptions {
  * Validates rules and generates middleware from defined rule tree.
  *
  */
-export function shield(ruleTree: IRules, options: IOptionsConstructor = {}): MiddlewareFunction<any, any, any> {
+export function shield(ruleTree: IRules, options: IOptionsConstructor = {}): MiddlewareFunction<any, any> {
   const normalizedOptions = normalizeOptions(options)
   const ruleTreeValidity = validateRuleTree(ruleTree)
 
   if (ruleTreeValidity.status === 'ok') {
-    const middleware = generateMiddlewareFromRuleTree(ruleTree, normalizedOptions)
-    return middleware
+    return generateMiddlewareFromRuleTree(ruleTree, normalizedOptions)
   } else {
     throw new ValidationError(ruleTreeValidity.message)
   }
