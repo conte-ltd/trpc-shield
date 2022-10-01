@@ -4,7 +4,7 @@ import { allow } from './constructors'
 import { withDefault } from './utils'
 import type { IFallbackErrorType, IOptions, IOptionsConstructor, IRules, ShieldRule } from './types'
 import type { MiddlewareFunction, ProcedureParams, CombinedDataTransformer, DefaultErrorShape } from '@trpc/server'
-import type { RootConfig } from '@trpc/server/src/core/internals/config'
+import type { RootConfig } from '@trpc/server/dist/core/internals/config'
 
 /**
  *
