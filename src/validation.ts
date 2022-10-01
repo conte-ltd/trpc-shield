@@ -10,19 +10,16 @@ import { isRuleFunction, flattenObjectOf, isLogicRule } from './utils'
  * to different rules.
  *
  */
-export function validateRuleTree(
-  ruleTree: IRules,
+export function validateRuleTree<TContext extends Record<string, any>>(
+  ruleTree: IRules<TContext>,
 ): { status: 'ok' } | { status: 'err'; message: string } {
   const rules = extractRules(ruleTree)
 
-  const valid = rules.reduce<{ map: Map<string, IRule>; duplicates: string[] }>(
+  const valid = rules.reduce<{ map: Map<string, IRule<TContext>>; duplicates: string[] }>(
     ({ map, duplicates }, rule) => {
       if (!map.has(rule.name)) {
         return { map: map.set(rule.name, rule), duplicates }
-      } else if (
-        !map.get(rule.name)!.equals(rule) &&
-        !duplicates.includes(rule.name)
-      ) {
+      } else if (!map.get(rule.name)!.equals(rule) && !duplicates.includes(rule.name)) {
         return {
           map: map.set(rule.name, rule),
           duplicates: [...duplicates, rule.name],
@@ -31,7 +28,7 @@ export function validateRuleTree(
         return { map, duplicates }
       }
     },
-    { map: new Map<string, IRule>(), duplicates: [] },
+    { map: new Map<string, IRule<TContext>>(), duplicates: [] },
   )
 
   if (valid.duplicates.length === 0) {
@@ -52,10 +49,10 @@ export function validateRuleTree(
    * Extracts rules from rule tree.
    *
    */
-  function extractRules(ruleTree: IRules): IRule[] {
-    const resolvers = flattenObjectOf<ShieldRule>(ruleTree, isRuleFunction)
+  function extractRules<TContext extends Record<string, any>>(ruleTree: IRules<TContext>): IRule<TContext>[] {
+    const resolvers = flattenObjectOf<ShieldRule<TContext>>(ruleTree, isRuleFunction)
 
-    const rules = resolvers.reduce<IRule[]>((rules, rule) => {
+    const rules = resolvers.reduce<IRule<TContext>[]>((rules, rule) => {
       if (isLogicRule(rule)) {
         return [...rules, ...extractLogicRules(rule)]
       } else {
@@ -72,8 +69,8 @@ export function validateRuleTree(
    *
    * @param rule
    */
-  function extractLogicRules(rule: ILogicRule): IRule[] {
-    return rule.getRules().reduce<IRule[]>((acc, shieldRule) => {
+  function extractLogicRules<TContext extends Record<string, any>>(rule: ILogicRule<TContext>): IRule<TContext>[] {
+    return rule.getRules().reduce<IRule<TContext>[]>((acc, shieldRule) => {
       if (isLogicRule(shieldRule)) {
         return [...acc, ...extractLogicRules(shieldRule)]
       } else {

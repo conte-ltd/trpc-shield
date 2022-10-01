@@ -1,18 +1,5 @@
-import {
-  IRuleFunction,
-  IRuleConstructorOptions,
-  ShieldRule,
-} from './types'
-import {
-  Rule,
-  RuleAnd,
-  RuleOr,
-  RuleNot,
-  RuleTrue,
-  RuleFalse,
-  RuleChain,
-  RuleRace,
-} from './rules'
+import { IRuleFunction, IRuleConstructorOptions, ShieldRule } from './types'
+import { Rule, RuleAnd, RuleOr, RuleNot, RuleTrue, RuleFalse, RuleChain, RuleRace } from './rules'
 
 /**
  *
@@ -40,24 +27,22 @@ import {
  * })
  *
  */
-export const rule = <TContext extends Record<string, any>>(
-  name?: string,
-  options?: IRuleConstructorOptions,
-) => (func: IRuleFunction<TContext>): Rule => {
-  if (typeof name === 'object') {
-    options = name
-    name = Math.random().toString()
-  } else if (typeof name === 'string') {
-    options = options || {}
-  } else {
-    name = Math.random().toString()
-    options = {}
+export const rule =
+  <TContext extends Record<string, any>>(name?: string, options?: IRuleConstructorOptions) =>
+  (func: IRuleFunction<TContext>): Rule<TContext> => {
+    if (typeof name === 'object') {
+      options = name
+      name = Math.random().toString()
+    } else if (typeof name === 'string') {
+      options = options || {}
+    } else {
+      name = Math.random().toString()
+      options = {}
+    }
+
+    // @ts-ignore
+    return new Rule(name, func, {})
   }
-
-  // @ts-ignore
-  return new Rule(name, func, {})
-}
-
 
 /**
  *
@@ -66,7 +51,7 @@ export const rule = <TContext extends Record<string, any>>(
  * Logical operator and serves as a wrapper for and operation.
  *
  */
-export const and = (...rules: ShieldRule[]): RuleAnd => {
+export const and = <TContext extends Record<string, any>>(...rules: ShieldRule<TContext>[]): RuleAnd<TContext> => {
   return new RuleAnd(rules)
 }
 
@@ -77,7 +62,7 @@ export const and = (...rules: ShieldRule[]): RuleAnd => {
  * Logical operator and serves as a wrapper for and operation.
  *
  */
-export const chain = (...rules: ShieldRule[]): RuleChain => {
+export const chain = <TContext extends Record<string, any>>(...rules: ShieldRule<TContext>[]): RuleChain<TContext> => {
   return new RuleChain(rules)
 }
 
@@ -88,7 +73,7 @@ export const chain = (...rules: ShieldRule[]): RuleChain => {
  * Logical operator and serves as a wrapper for and operation.
  *
  */
-export const race = (...rules: ShieldRule[]): RuleRace => {
+export const race = <TContext extends Record<string, any>>(...rules: ShieldRule<TContext>[]): RuleRace<TContext> => {
   return new RuleRace(rules)
 }
 
@@ -99,7 +84,7 @@ export const race = (...rules: ShieldRule[]): RuleRace => {
  * Logical operator or serves as a wrapper for or operation.
  *
  */
-export const or = (...rules: ShieldRule[]): RuleOr => {
+export const or = <TContext extends Record<string, any>>(...rules: ShieldRule<TContext>[]): RuleOr<TContext> => {
   return new RuleOr(rules)
 }
 
@@ -110,7 +95,10 @@ export const or = (...rules: ShieldRule[]): RuleOr => {
  * Logical operator not serves as a wrapper for not operation.
  *
  */
-export const not = (rule: ShieldRule, error?: string | Error): RuleNot => {
+export const not = <TContext extends Record<string, any>>(
+  rule: ShieldRule<TContext>,
+  error?: string | Error,
+): RuleNot<TContext> => {
   if (typeof error === 'string') return new RuleNot(rule, new Error(error))
   return new RuleNot(rule, error)
 }

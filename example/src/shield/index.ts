@@ -1,11 +1,11 @@
-import {shield, allow, deny, rule} from '../../../lib'
-import {Context} from '../context';
+import { shield, allow, deny, rule } from '../../../lib'
+import { Context } from '../context'
 
 const isAuthenticated = rule<Context>()(async (ctx) => {
   return ctx.user !== null
 })
 
-export const permissions = shield({
+export const permissions = shield<Context>({
   query: {
     'user.findMany': deny,
     '*.findFirst': deny,
@@ -13,6 +13,6 @@ export const permissions = shield({
   },
   mutation: {
     '*': deny,
-    'user.createOne':isAuthenticated,
+    'user.createOne': isAuthenticated,
   },
 })

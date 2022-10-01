@@ -8,7 +8,10 @@ import { IRules, IOptions } from './types'
  * Generates middleware from given rules.
  *
  */
-export function generateMiddlewareFromRuleTree(ruleTree: IRules, options: IOptions) {
+export function generateMiddlewareFromRuleTree<TContext extends Record<string, unknown>>(
+  ruleTree: IRules<TContext>,
+  options: IOptions<TContext>,
+) {
   return ({
     next,
     ctx,

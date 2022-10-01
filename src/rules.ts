@@ -1,50 +1,35 @@
-import {
-  IRuleFunction,
-  IRule,
-  IRuleConstructorOptions,
-  ILogicRule,
-  ShieldRule,
-  IRuleResult,
-  IOptions,
-} from "./types";
+import { IRuleFunction, IRule, IRuleConstructorOptions, ILogicRule, ShieldRule, IRuleResult, IOptions } from './types'
 
-export class Rule implements IRule {
-  readonly name: string;
+export class Rule<TContext extends Record<string, any>> implements IRule<TContext> {
+  readonly name: string
 
-  private func: IRuleFunction;
+  private func: IRuleFunction<TContext>
 
-  constructor(
-    name: string,
-    func: IRuleFunction,
-    constructorOptions: IRuleConstructorOptions
-  ) {
-    const options = { ...constructorOptions };
-    this.name = name;
-    this.func = func;
+  constructor(name: string, func: IRuleFunction<TContext>, constructorOptions: IRuleConstructorOptions) {
+    const options = { ...constructorOptions }
+    this.name = name
+    this.func = func
   }
 
-
-  async resolve(
-    ctx: { [name: string]: any }, type: string, path: string, rawInput: unknown, options: IOptions
-  ): Promise<IRuleResult> {
+  async resolve(ctx: TContext, type: string, path: string, rawInput: unknown, options: IOptions<TContext>): Promise<IRuleResult> {
     try {
       /* Resolve */
-      const res = await this.executeRule(ctx, type, path, rawInput, options);
+      const res = await this.executeRule(ctx, type, path, rawInput, options)
 
       if (res instanceof Error) {
-        return res;
-      } else if (typeof res === "string") {
-        return new Error(res);
+        return res
+      } else if (typeof res === 'string') {
+        return new Error(res)
       } else if (res === true) {
-        return true;
+        return true
       } else {
-        return false;
+        return false
       }
     } catch (err) {
       if (options.debug) {
-        throw err;
+        throw err
       } else {
-        return false;
+        return false
       }
     }
   }
@@ -55,120 +40,124 @@ export class Rule implements IRule {
    * and checks whether their functions are equal.
    *
    */
-  equals(rule: Rule): boolean {
-    return this.func === rule.func;
+  equals(rule: Rule<TContext>): boolean {
+    return this.func === rule.func
   }
 
-
-  private executeRule(
-    ctx: { [name: string]: any }, type: string, path: string, rawInput: unknown, options: IOptions
+  private executeRule<TContext extends Record<string, any>>(
+    ctx: TContext,
+    type: string,
+    path: string,
+    rawInput: unknown,
+    options: IOptions<TContext>,
   ): string | boolean | Error | Promise<IRuleResult> {
-    return this.func(ctx, type, path, rawInput, options);
+    // @ts-ignore
+    return this.func(ctx, type, path, rawInput, options)
   }
 }
 
-export class LogicRule implements ILogicRule {
-  private rules: ShieldRule[];
+export class LogicRule<TContext extends Record<string, any>> implements ILogicRule<TContext> {
+  private rules: ShieldRule<TContext>[]
 
-  constructor(rules: ShieldRule[]) {
-    this.rules = rules;
+  constructor(rules: ShieldRule<TContext>[]) {
+    this.rules = rules
   }
 
   /**
    * By default logic rule resolves to false.
    */
   async resolve(
-    ctx: { [name: string]: any }, type: string, path: string, rawInput: unknown, options: IOptions
+    ctx: { [name: string]: any },
+    type: string,
+    path: string,
+    rawInput: unknown,
+    options: IOptions<TContext>,
   ): Promise<IRuleResult> {
-    return false;
+    return false
   }
 
   /**
    * Evaluates all the rules.
    */
   async evaluate(
-    ctx: { [name: string]: any }, type: string, path: string, rawInput: unknown, options: IOptions
+    ctx: TContext,
+    type: string,
+    path: string,
+    rawInput: unknown,
+    options: IOptions<TContext>,
   ): Promise<IRuleResult[]> {
-    const rules = this.getRules();
-    const tasks = rules.map((rule) =>
-      rule.resolve(ctx, type, path, rawInput, options)
-    );
+    const rules = this.getRules()
+    const tasks = rules.map((rule) => rule.resolve(ctx, type, path, rawInput, options))
 
-    return Promise.all(tasks);
+    return Promise.all(tasks)
   }
 
   /**
    * Returns rules in a logic rule.
    */
   getRules() {
-    return this.rules;
+    return this.rules
   }
 }
 
 // Extended Types
 
-export class RuleOr extends LogicRule {
-  constructor(rules: ShieldRule[]) {
-    super(rules);
+export class RuleOr<TContext extends Record<string, any>> extends LogicRule<TContext> {
+  constructor(rules: ShieldRule<TContext>[]) {
+    super(rules)
   }
 
   /**
    * Makes sure that at least one of them has evaluated to true.
    */
-  async resolve(
-    ctx: { [name: string]: any }, type: string, path: string, rawInput: unknown, options: IOptions
-  ): Promise<IRuleResult> {
-    const result = await this.evaluate(ctx, type, path, rawInput, options);
+  async resolve(ctx: TContext, type: string, path: string, rawInput: unknown, options: IOptions<TContext>): Promise<IRuleResult> {
+    const result = await this.evaluate(ctx, type, path, rawInput, options)
 
     if (result.every((res) => res !== true)) {
-      const customError = result.find((res) => res instanceof Error);
-      return customError || false;
+      const customError = result.find((res) => res instanceof Error)
+      return customError || false
     } else {
-      return true;
+      return true
     }
   }
 }
 
-export class RuleAnd extends LogicRule {
-  constructor(rules: ShieldRule[]) {
-    super(rules);
+export class RuleAnd<TContext extends Record<string, any>> extends LogicRule<TContext> {
+  constructor(rules: ShieldRule<TContext>[]) {
+    super(rules)
   }
 
   /**
    * Makes sure that all of them have resolved to true.
    */
-  async resolve(
-    ctx: { [name: string]: any }, type: string, path: string, rawInput: unknown, options: IOptions
-  ): Promise<IRuleResult> {
-    const result = await this.evaluate(ctx, type, path, rawInput, options);
+  async resolve(ctx: TContext, type: string, path: string, rawInput: unknown, options: IOptions<TContext>): Promise<IRuleResult> {
+    const result = await this.evaluate(ctx, type, path, rawInput, options)
 
     if (result.some((res) => res !== true)) {
-      const customError = result.find((res) => res instanceof Error);
-      return customError || false;
+      const customError = result.find((res) => res instanceof Error)
+      return customError || false
     } else {
-      return true;
+      return true
     }
   }
 }
 
-export class RuleChain extends LogicRule {
-  constructor(rules: ShieldRule[]) {
-    super(rules);
+export class RuleChain<TContext extends Record<string, any>> extends LogicRule<TContext> {
+  constructor(rules: ShieldRule<TContext>[]) {
+    super(rules)
   }
 
   /**
    * Makes sure that all of them have resolved to true.
    */
-  async resolve(
-    ctx: { [name: string]: any }, type: string, path: string, rawInput: unknown, options: IOptions
-  ): Promise<IRuleResult> {
-    const result = await this.evaluate(ctx, type, path, rawInput, options);
+  async resolve(ctx: TContext, type: string, path: string, rawInput: unknown, options: IOptions<TContext>): Promise<IRuleResult> {
+    const result = await this.evaluate(ctx, type, path, rawInput, options)
 
     if (result.some((res) => res !== true)) {
-      const customError = result.find((res) => res instanceof Error);
-      return customError || false;
+      const customError = result.find((res) => res instanceof Error)
+      return customError || false
     } else {
-      return true;
+      return true
     }
   }
 
@@ -176,45 +165,45 @@ export class RuleChain extends LogicRule {
    * Evaluates all the rules.
    */
   async evaluate(
-    ctx: { [name: string]: any }, type: string, path: string, rawInput: unknown, options: IOptions
+    ctx: TContext,
+    type: string,
+    path: string,
+    rawInput: unknown,
+    options: IOptions<TContext>,
   ): Promise<IRuleResult[]> {
-    const rules = this.getRules();
+    const rules = this.getRules()
 
-    return iterate(rules);
+    return iterate(rules)
 
-    async function iterate([rule, ...otherRules]: ShieldRule[]): Promise<
-      IRuleResult[]
-    > {
-      if (rule === undefined) return [];
+    async function iterate([rule, ...otherRules]: ShieldRule<TContext>[]): Promise<IRuleResult[]> {
+      if (rule === undefined) return []
       return rule.resolve(ctx, type, path, rawInput, options).then((res) => {
         if (res !== true) {
-          return [res];
+          return [res]
         } else {
-          return iterate(otherRules).then((ress) => ress.concat(res));
+          return iterate(otherRules).then((ress) => ress.concat(res))
         }
-      });
+      })
     }
   }
 }
 
-export class RuleRace extends LogicRule {
-  constructor(rules: ShieldRule[]) {
-    super(rules);
+export class RuleRace<TContext extends Record<string, any>> extends LogicRule<TContext> {
+  constructor(rules: ShieldRule<TContext>[]) {
+    super(rules)
   }
 
   /**
    * Makes sure that at least one of them resolved to true.
    */
-  async resolve(
-    ctx: { [name: string]: any }, type: string, path: string, rawInput: unknown, options: IOptions
-  ): Promise<IRuleResult> {
-    const result = await this.evaluate(ctx, type, path, rawInput, options);
+  async resolve(ctx: TContext, type: string, path: string, rawInput: unknown, options: IOptions<TContext>): Promise<IRuleResult> {
+    const result = await this.evaluate(ctx, type, path, rawInput, options)
 
     if (result.some((res) => res === true)) {
-      return true;
+      return true
     } else {
-      const customError = result.find((res) => res instanceof Error);
-      return customError || false;
+      const customError = result.find((res) => res instanceof Error)
+      return customError || false
     }
   }
 
@@ -222,33 +211,35 @@ export class RuleRace extends LogicRule {
    * Evaluates all the rules.
    */
   async evaluate(
-    ctx: { [name: string]: any }, type: string, path: string, rawInput: unknown, options: IOptions
+    ctx: TContext,
+    type: string,
+    path: string,
+    rawInput: unknown,
+    options: IOptions<TContext>,
   ): Promise<IRuleResult[]> {
-    const rules = this.getRules();
+    const rules = this.getRules()
 
-    return iterate(rules);
+    return iterate(rules)
 
-    async function iterate([rule, ...otherRules]: ShieldRule[]): Promise<
-      IRuleResult[]
-    > {
-      if (rule === undefined) return [];
+    async function iterate([rule, ...otherRules]: ShieldRule<TContext>[]): Promise<IRuleResult[]> {
+      if (rule === undefined) return []
       return rule.resolve(ctx, type, path, rawInput, options).then((res) => {
         if (res === true) {
-          return [res];
+          return [res]
         } else {
-          return iterate(otherRules).then((ress) => ress.concat(res));
+          return iterate(otherRules).then((ress) => ress.concat(res))
         }
-      });
+      })
     }
   }
 }
 
-export class RuleNot extends LogicRule {
-  error?: Error;
+export class RuleNot<TContext extends Record<string, any>> extends LogicRule<TContext> {
+  error?: Error
 
-  constructor(rule: ShieldRule, error?: Error) {
-    super([rule]);
-    this.error = error;
+  constructor(rule: ShieldRule<TContext>, error?: Error) {
+    super([rule])
+    this.error = error
   }
 
   /**
@@ -256,25 +247,23 @@ export class RuleNot extends LogicRule {
    * Negates the result.
    *
    */
-  async resolve(
-    ctx: { [name: string]: any }, type: string, path: string, rawInput: unknown, options: IOptions
-  ): Promise<IRuleResult> {
-    const [res] = await this.evaluate(ctx, type, path, rawInput, options);
+  async resolve(ctx: TContext, type: string, path: string, rawInput: unknown, options: IOptions<TContext>): Promise<IRuleResult> {
+    const [res] = await this.evaluate(ctx, type, path, rawInput, options)
 
     if (res instanceof Error) {
-      return true;
+      return true
     } else if (res !== true) {
-      return true;
+      return true
     } else {
-      if (this.error) return this.error;
-      return false;
+      if (this.error) return this.error
+      return false
     }
   }
 }
 
-export class RuleTrue extends LogicRule {
+export class RuleTrue<TContext extends Record<string, any>> extends LogicRule<TContext> {
   constructor() {
-    super([]);
+    super([])
   }
 
   /**
@@ -283,13 +272,13 @@ export class RuleTrue extends LogicRule {
    *
    */
   async resolve(): Promise<IRuleResult> {
-    return true;
+    return true
   }
 }
 
-export class RuleFalse extends LogicRule {
+export class RuleFalse<TContext extends Record<string, any>> extends LogicRule<TContext> {
   constructor() {
-    super([]);
+    super([])
   }
 
   /**
@@ -298,6 +287,6 @@ export class RuleFalse extends LogicRule {
    *
    */
   async resolve(): Promise<IRuleResult> {
-    return false;
+    return false
   }
 }

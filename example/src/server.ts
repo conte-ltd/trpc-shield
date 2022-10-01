@@ -20,18 +20,18 @@ const runApp = async () => {
     }),
   )
 
-  // app.use(
-  //   playgroundEndpoint,
-  //   await expressHandler({
-  //     trpcApiEndpoint,
-  //     playgroundEndpoint,
-  //     router: appRouter,
-  //     // uncomment this if you're using superjson
-  //     // request: {
-  //     //   superjson: true,
-  //     // },
-  //   }),
-  // )
+  app.use(
+    playgroundEndpoint,
+    await expressHandler({
+      trpcApiEndpoint,
+      playgroundEndpoint,
+      router: appRouter,
+      // uncomment this if you're using superjson
+      // request: {
+      //   superjson: true,
+      // },
+    }),
+  )
 
   app.get('/', (req, res) => res.send('Express + Prisma + tRPC + tRPC Shield'))
 

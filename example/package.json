@@ -16,7 +16,7 @@
     "@prisma/client": "^4.4.0",
     "@trpc/server": "^10.0.0-proxy-beta.10",
     "express": "^4.18.1",
-    "trpc-playground": "^0.4.3",
+    "trpc-playground": "^1.0.0-next.0",
     "typescript": "4.8.4"
   },
   "devDependencies": {
