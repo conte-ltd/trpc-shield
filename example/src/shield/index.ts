@@ -1,4 +1,4 @@
-import { shield, allow, deny, rule } from '../../../lib'
+import { shield, deny, rule } from '../../../lib'
 import { Context } from '../context'
 
 const isAuthenticated = rule<Context>()(async (ctx) => {

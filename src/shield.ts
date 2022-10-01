@@ -1,13 +1,10 @@
 import { validateRuleTree, ValidationError } from './validation'
-import { IFallbackErrorType, IOptions, IOptionsConstructor, IRules, ShieldRule } from './types'
 import { generateMiddlewareFromRuleTree } from './generator'
 import { allow } from './constructors'
 import { withDefault } from './utils'
-import { MiddlewareFunction } from '@trpc/server'
-import { ProcedureParams } from '@trpc/server/src/core/procedure'
-import { RootConfig } from '@trpc/server/src/core/internals/config'
-import { CombinedDataTransformer } from '@trpc/server/src/transformer'
-import { DefaultErrorShape } from '@trpc/server/src/error/formatter'
+import type { IFallbackErrorType, IOptions, IOptionsConstructor, IRules, ShieldRule } from './types'
+import type { MiddlewareFunction, ProcedureParams, CombinedDataTransformer, DefaultErrorShape } from '@trpc/server'
+import type { RootConfig } from '@trpc/server/src/core/internals/config'
 
 /**
  *
