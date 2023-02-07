@@ -11,20 +11,23 @@ export class Rule<TContext extends Record<string, any>> implements IRule<TContex
     this.func = func
   }
 
-  async resolve(ctx: TContext, type: string, path: string, rawInput: unknown, options: IOptions<TContext>): Promise<IRuleResult> {
+  async resolve(
+    ctx: TContext,
+    type: string,
+    path: string,
+    input: { [name: string]: any },
+    rawInput: unknown,
+    options: IOptions<TContext>,
+  ): Promise<IRuleResult> {
     try {
       /* Resolve */
-      const res = await this.executeRule(ctx, type, path, rawInput, options)
+      const res = await this.executeRule(ctx, type, path, input, rawInput, options)
 
       if (res instanceof Error) {
         return res
       } else if (typeof res === 'string') {
         return new Error(res)
-      } else if (res === true) {
-        return true
-      } else {
-        return false
-      }
+      } else return !!res
     } catch (err) {
       if (options.debug) {
         throw err
@@ -48,11 +51,12 @@ export class Rule<TContext extends Record<string, any>> implements IRule<TContex
     ctx: TContext,
     type: string,
     path: string,
+    input: { [name: string]: any },
     rawInput: unknown,
     options: IOptions<TContext>,
   ): string | boolean | Error | Promise<IRuleResult> {
     // @ts-ignore
-    return this.func(ctx, type, path, rawInput, options)
+    return this.func(ctx, type, path, input, rawInput, options)
   }
 }
 
@@ -70,6 +74,7 @@ export class LogicRule<TContext extends Record<string, any>> implements ILogicRu
     ctx: { [name: string]: any },
     type: string,
     path: string,
+    input: { [name: string]: any },
     rawInput: unknown,
     options: IOptions<TContext>,
   ): Promise<IRuleResult> {
@@ -83,11 +88,12 @@ export class LogicRule<TContext extends Record<string, any>> implements ILogicRu
     ctx: TContext,
     type: string,
     path: string,
+    input: { [name: string]: any },
     rawInput: unknown,
     options: IOptions<TContext>,
   ): Promise<IRuleResult[]> {
     const rules = this.getRules()
-    const tasks = rules.map((rule) => rule.resolve(ctx, type, path, rawInput, options))
+    const tasks = rules.map((rule) => rule.resolve(ctx, type, path, input, rawInput, options))
 
     return Promise.all(tasks)
   }
@@ -110,8 +116,15 @@ export class RuleOr<TContext extends Record<string, any>> extends LogicRule<TCon
   /**
    * Makes sure that at least one of them has evaluated to true.
    */
-  async resolve(ctx: TContext, type: string, path: string, rawInput: unknown, options: IOptions<TContext>): Promise<IRuleResult> {
-    const result = await this.evaluate(ctx, type, path, rawInput, options)
+  async resolve(
+    ctx: TContext,
+    type: string,
+    path: string,
+    input: { [name: string]: any },
+    rawInput: unknown,
+    options: IOptions<TContext>,
+  ): Promise<IRuleResult> {
+    const result = await this.evaluate(ctx, type, path, input, rawInput, options)
 
     if (result.every((res) => res !== true)) {
       const customError = result.find((res) => res instanceof Error)
@@ -130,8 +143,15 @@ export class RuleAnd<TContext extends Record<string, any>> extends LogicRule<TCo
   /**
    * Makes sure that all of them have resolved to true.
    */
-  async resolve(ctx: TContext, type: string, path: string, rawInput: unknown, options: IOptions<TContext>): Promise<IRuleResult> {
-    const result = await this.evaluate(ctx, type, path, rawInput, options)
+  async resolve(
+    ctx: TContext,
+    type: string,
+    path: string,
+    input: { [name: string]: any },
+    rawInput: unknown,
+    options: IOptions<TContext>,
+  ): Promise<IRuleResult> {
+    const result = await this.evaluate(ctx, type, path, input, rawInput, options)
 
     if (result.some((res) => res !== true)) {
       const customError = result.find((res) => res instanceof Error)
@@ -150,8 +170,15 @@ export class RuleChain<TContext extends Record<string, any>> extends LogicRule<T
   /**
    * Makes sure that all of them have resolved to true.
    */
-  async resolve(ctx: TContext, type: string, path: string, rawInput: unknown, options: IOptions<TContext>): Promise<IRuleResult> {
-    const result = await this.evaluate(ctx, type, path, rawInput, options)
+  async resolve(
+    ctx: TContext,
+    type: string,
+    path: string,
+    input: { [name: string]: any },
+    rawInput: unknown,
+    options: IOptions<TContext>,
+  ): Promise<IRuleResult> {
+    const result = await this.evaluate(ctx, type, path, input, rawInput, options)
 
     if (result.some((res) => res !== true)) {
       const customError = result.find((res) => res instanceof Error)
@@ -168,6 +195,7 @@ export class RuleChain<TContext extends Record<string, any>> extends LogicRule<T
     ctx: TContext,
     type: string,
     path: string,
+    input: { [name: string]: any },
     rawInput: unknown,
     options: IOptions<TContext>,
   ): Promise<IRuleResult[]> {
@@ -177,7 +205,7 @@ export class RuleChain<TContext extends Record<string, any>> extends LogicRule<T
 
     async function iterate([rule, ...otherRules]: ShieldRule<TContext>[]): Promise<IRuleResult[]> {
       if (rule === undefined) return []
-      return rule.resolve(ctx, type, path, rawInput, options).then((res) => {
+      return rule.resolve(ctx, type, path, input, rawInput, options).then((res) => {
         if (res !== true) {
           return [res]
         } else {
@@ -196,8 +224,15 @@ export class RuleRace<TContext extends Record<string, any>> extends LogicRule<TC
   /**
    * Makes sure that at least one of them resolved to true.
    */
-  async resolve(ctx: TContext, type: string, path: string, rawInput: unknown, options: IOptions<TContext>): Promise<IRuleResult> {
-    const result = await this.evaluate(ctx, type, path, rawInput, options)
+  async resolve(
+    ctx: TContext,
+    type: string,
+    path: string,
+    input: { [name: string]: any },
+    rawInput: unknown,
+    options: IOptions<TContext>,
+  ): Promise<IRuleResult> {
+    const result = await this.evaluate(ctx, type, path, input, rawInput, options)
 
     if (result.some((res) => res === true)) {
       return true
@@ -214,6 +249,7 @@ export class RuleRace<TContext extends Record<string, any>> extends LogicRule<TC
     ctx: TContext,
     type: string,
     path: string,
+    input: { [name: string]: any },
     rawInput: unknown,
     options: IOptions<TContext>,
   ): Promise<IRuleResult[]> {
@@ -223,7 +259,7 @@ export class RuleRace<TContext extends Record<string, any>> extends LogicRule<TC
 
     async function iterate([rule, ...otherRules]: ShieldRule<TContext>[]): Promise<IRuleResult[]> {
       if (rule === undefined) return []
-      return rule.resolve(ctx, type, path, rawInput, options).then((res) => {
+      return rule.resolve(ctx, type, path, input, rawInput, options).then((res) => {
         if (res === true) {
           return [res]
         } else {
@@ -247,8 +283,15 @@ export class RuleNot<TContext extends Record<string, any>> extends LogicRule<TCo
    * Negates the result.
    *
    */
-  async resolve(ctx: TContext, type: string, path: string, rawInput: unknown, options: IOptions<TContext>): Promise<IRuleResult> {
-    const [res] = await this.evaluate(ctx, type, path, rawInput, options)
+  async resolve(
+    ctx: TContext,
+    type: string,
+    path: string,
+    input: { [name: string]: any },
+    rawInput: unknown,
+    options: IOptions<TContext>,
+  ): Promise<IRuleResult> {
+    const [res] = await this.evaluate(ctx, type, path, input, rawInput, options)
 
     if (res instanceof Error) {
       return true

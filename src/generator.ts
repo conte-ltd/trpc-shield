@@ -17,12 +17,14 @@ export function generateMiddlewareFromRuleTree<TContext extends Record<string, u
     ctx,
     type,
     path,
+    input,
     rawInput,
   }: {
     next: Function
-    ctx: { [name: string]: any }
+    ctx: TContext
     type: string
     path: string
+    input: { [name: string]: any }
     rawInput: unknown
   }) => {
     const opWithPath: Array<string> = path.split('.')
@@ -56,7 +58,7 @@ export function generateMiddlewareFromRuleTree<TContext extends Record<string, u
     }
 
     if (rule) {
-      return rule.resolve(ctx, type, path, rawInput, options).then((result: any) => {
+      return rule.resolve(ctx, type, path, input, rawInput, options).then((result: any) => {
         if (!result) throw options.fallbackError
         return next()
       })

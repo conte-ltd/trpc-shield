@@ -84,3 +84,13 @@ Example endpoint:
 ```
 http://localhost:3001/trpc/user.updateOneUser
 ```
+
+### 6. Past at Playground
+```typescript
+await trpc.user.createOne.mutate({
+  data: {
+    username: "xxx",
+    email: "xxx@xxx.com"
+  }
+})
+```

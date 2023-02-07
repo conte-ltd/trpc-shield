@@ -4,7 +4,7 @@ import { allow } from './constructors'
 import { withDefault } from './utils'
 import type { IFallbackErrorType, IOptions, IOptionsConstructor, IRules, ShieldRule } from './types'
 import type { MiddlewareFunction, ProcedureParams, CombinedDataTransformer, DefaultErrorShape } from '@trpc/server'
-import type { RootConfig } from '@trpc/server/dist/core/internals/config'
+import type { AnyRootConfig } from '@trpc/server/dist/core/internals/config'
 
 /**
  *
@@ -37,13 +37,7 @@ function normalizeOptions<TContext extends Record<string, any>>(options: IOption
  */
 export function shield<
   TContext extends Record<string, any>,
-  TConfig extends RootConfig = {
-    transformer: CombinedDataTransformer
-    errorShape: DefaultErrorShape
-    ctx: TContext
-    meta: Record<string, unknown>
-  },
-  TContextIn = TContext,
+  TConfig extends AnyRootConfig = AnyRootConfig,
   TContextOut = TContext,
   TInputIn = unknown,
   TInputOut = unknown,
@@ -54,8 +48,8 @@ export function shield<
   ruleTree: IRules<TContext>,
   options: IOptionsConstructor<TContext> = {},
 ): MiddlewareFunction<
-  ProcedureParams<TConfig, TContextIn, TContextOut, TInputIn, TInputOut, TOutputIn, TOutputOut, TMeta>,
-  ProcedureParams<TConfig, TContextIn, TContextOut, TInputIn, TInputOut, TOutputIn, TOutputOut, TMeta>
+  ProcedureParams<TConfig, TContextOut, TInputIn, TInputOut, TOutputIn, TOutputOut, TMeta>,
+  ProcedureParams<TConfig, TContextOut, TInputIn, TInputOut, TOutputIn, TOutputOut, TMeta>
 > {
   const normalizedOptions = normalizeOptions(options)
   const ruleTreeValidity = validateRuleTree(ruleTree)

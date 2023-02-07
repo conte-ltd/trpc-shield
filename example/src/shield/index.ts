@@ -12,7 +12,7 @@ export const permissions = shield<Context>({
     'post.*': deny,
   },
   mutation: {
-    '*': deny,
-    'user.createOne': isAuthenticated,
+    '*': isAuthenticated,
+    // 'user.createOne': isAuthenticated,
   },
 })

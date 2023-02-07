@@ -57,7 +57,7 @@ const upsertOne = procedure
     return ctx.prisma.user.upsert(input);
   });
 
-export const usersRouter = t.router({
+export const userRouter = t.router({
   aggregate,
   createOne,
   deleteMany,
